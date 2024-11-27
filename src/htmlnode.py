@@ -8,7 +8,6 @@ class HTMLNode():
     def __repr__(self):
         return f"{self.tag}, {self.value}, {self.children}, {self.props}"
 
-
     def to_html(self):
         raise NotImplementedError 
     
@@ -29,5 +28,22 @@ class LeafNode(HTMLNode):
         if self.value is None:
             raise ValueError ("No value")
         if self.tag is None:
-            return value
+            return self.value
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
+
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError ("No tag") 
+        if self.children is None:
+            raise ValueError ("No Children") 
+        insert = ''
+        for leafnode in self.children:
+            insert += leafnode.to_html()
+
+        return f"<{self.tag}{self.props_to_html()}>{ insert }</{self.tag}>"
+
