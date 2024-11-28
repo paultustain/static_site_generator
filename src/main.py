@@ -17,7 +17,7 @@ def text_node_to_html_node(text_node):
         case TextType.IMAGE:
             return LeafNode("img", "", {'src': text_node.url, 'alt': text_node.text})        
         case _:
-            print("Not")
+            raise ValueError ("Unknown text type")
 
 def main():
     tn = TextNode("This is a text node", "bold", "https://boot.dev")
