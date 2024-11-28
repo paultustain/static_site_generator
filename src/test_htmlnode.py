@@ -1,6 +1,6 @@
 import unittest
 from htmlnode import HTMLNode, LeafNode, ParentNode 
-
+from main import text_node_to_html_node
 
 class TestHTMLNode(unittest.TestCase):
     def test_eq(self):
@@ -67,6 +67,7 @@ class TestHTMLNode(unittest.TestCase):
                 {"style": "NEWSTYLE"}
                 )
         self.assertEqual(node5.to_html(), '<p style="NEWSTYLE"><p>This is a paragraph of text.</p><a href="https://www.google.com">Click me!</a></p>')
+
 
 
 if __name__ == '__main__':
