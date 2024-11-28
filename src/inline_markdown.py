@@ -4,14 +4,17 @@ from textnode import TextType, TextNode
 
 def format_node(split_node, text_type):
     returned_list = []
+    
     for i, n in enumerate(split_node):
         if i % 2 == 0:
             node = TextNode(n, TextType.NORMAL)
         else:
             node = TextNode(n, text_type)
-        returned_list.append(
-            node
-        )
+        
+        if n != "":
+            returned_list.append(
+                node
+            )
     return returned_list
 
 
@@ -24,6 +27,9 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     '''
     output_list = []
     for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            output_list.append(node)
+            continue
         split_node = node.text.split(delimiter)
         if len(split_node) % 2 == 0:
             raise ValueError ("Need to close the delimiter")
