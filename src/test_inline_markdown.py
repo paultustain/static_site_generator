@@ -3,6 +3,8 @@ from inline_markdown import (
     split_nodes_delimiter,
     extract_markdown_links,
     extract_markdown_images,
+    split_nodes_link, 
+    split_nodes_image
 )
 
 from textnode import TextNode, TextType
@@ -104,6 +106,100 @@ class TestInlineMarkdown(unittest.TestCase):
                 ("another link", "https://blog.boot.dev"),
             ],
             matches,
+        )
+    
+    def test_split_node_links_none(self):
+        node = [
+            TextNode(
+                "This is a block with no links",
+                TextType.NORMAL
+            )
+        ]
+        self.assertListEqual(
+            node,
+            split_nodes_link(node)
+        )
+
+    def test_example_node_links(self):
+
+        node = [TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.NORMAL,
+        )]
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.NORMAL),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.NORMAL),
+                TextNode(
+                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+            split_nodes_link(node)
+        )
+
+    def test_example_node_links_bold(self):
+        node = [TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.BOLD,
+        )]
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.BOLD),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.BOLD),
+                TextNode(
+                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+            split_nodes_link(node)
+        )
+
+    def test_split_node_images_none(self):
+        node = [
+            TextNode(
+                "This is a block with no images",
+                TextType.NORMAL
+            )
+        ]
+        self.assertListEqual(
+            node,
+            split_nodes_image(node)
+        )
+
+    def test_example_node_images(self):
+
+        node = [TextNode(
+            "This is text with an image ![to boot dev](https://www.boot.gif) and ![to youtube](https://www.youtube.png)",
+            TextType.NORMAL,
+        )]
+        self.assertListEqual(
+            [
+                TextNode("This is text with an image ", TextType.NORMAL),
+                TextNode("to boot dev", TextType.IMAGE, "https://www.boot.gif"),
+                TextNode(" and ", TextType.NORMAL),
+                TextNode(
+                    "to youtube", TextType.IMAGE, "https://www.youtube.png"
+                ),
+            ],
+            split_nodes_image(node)
+        )
+
+    def test_example_node_images_bold(self):
+        node = [TextNode(
+            "This is text with an image ![to boot dev](https://www.boot.gif) and ![to youtube](https://www.youtube.png)",
+            TextType.BOLD,
+        )]
+        self.assertListEqual(
+            [
+                TextNode("This is text with an image ", TextType.BOLD),
+                TextNode("to boot dev", TextType.IMAGE, "https://www.boot.gif"),
+                TextNode(" and ", TextType.BOLD),
+                TextNode(
+                    "to youtube", TextType.IMAGE, "https://www.youtube.png"
+                ),
+            ],
+            split_nodes_image(node)
         )
 
 
