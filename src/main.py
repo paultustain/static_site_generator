@@ -4,9 +4,22 @@ from inline_markdown import (
     text_to_textnodes, 
     split_nodes_image
 )
+from block_markdown import markdown_to_blocks
 
 def main():
-    pass
+    text = """
+        # This is a heading
+
+        This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+        * This is the first list item in a list block
+        * This is a list item
+        * This is another list item
+
+        hello
+        """
+    
+    print(markdown_to_blocks(text))
     # nodes = text_to_textnodes(
     #     "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
     # )
