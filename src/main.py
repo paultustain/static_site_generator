@@ -1,25 +1,35 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
-from inline_markdown import (
-    text_to_textnodes, 
-    split_nodes_image
-)
-from block_markdown import markdown_to_blocks
+
+from create_html import markdown_to_html_node
 
 def main():
     text = """
-        # This is a heading
+# This is a heading
 
-        This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
 
-        * This is the first list item in a list block
-        * This is a list item
-        * This is another list item
+* This is the first list item in a list block
+* This is a list item
+* This is another list item
 
-        hello
+### This is a heading 3
+
+``` Now I am writing a block of code
+it goes over a few
+lines 
+```
+
+1. Lists
+2. are
+3. horrible
+
+> now I am quoting something. 
+
+hello
         """
     
-    print(markdown_to_blocks(text))
+    print(markdown_to_html_node(text))
     # nodes = text_to_textnodes(
     #     "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
     # )
