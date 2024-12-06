@@ -1,3 +1,4 @@
+import os 
 from block_markdown import markdown_to_blocks, block_to_block_type
 from blocknode import BlockType
 from htmlnode import ParentNode, LeafNode 
@@ -36,7 +37,13 @@ def wrap_html(block):
             ) 
 
         case BlockType.UNORDEREDLIST:
-            list_split = [LeafNode('li', b[2:]) for b in block.block.split('\n')]
+            text_split = [
+                [   text_node_to_html_node(t)
+                    for t in text_to_textnodes(b[2:])
+                ]
+                for b in block.block.split('\n')
+            ]
+            list_split = [ParentNode('li', ts) for ts in text_split]
             node = ParentNode(
                 "ul", 
                 list_split
@@ -44,15 +51,21 @@ def wrap_html(block):
             return node.to_html()
 
         case BlockType.ORDEREDLIST:
-            list_split = [LeafNode('li', b[3:]) for b in block.block.split('\n')]
+            text_split = [
+                [   text_node_to_html_node(t)
+                    for t in text_to_textnodes(b[3:])
+                ]
+                for b in block.block.split('\n')
+            ]
+            list_split = [ParentNode('li', ts) for ts in text_split]
             node = ParentNode(
-                "ul", 
+                "ol", 
                 list_split
             )
             return node.to_html()
 
         case BlockType.QUOTE:
-            return LeafNode("quote", block.block.replace('> ', '')).to_html()
+            return LeafNode("blockquote", block.block.replace('> ', '')).to_html()
 
         case _:
             raise Exception ("Unknown Block Type")
@@ -66,3 +79,61 @@ def markdown_to_html_node(markdown):
         final_html += wrap_html(block_node)
     
     return final_html + "</div>"
+
+
+def extract_heading(markdown):
+    if "# " in markdown:
+        blocks = markdown_to_blocks(markdown)
+        for block in blocks:
+            if '# ' in block:
+                return block[2:]
+
+    else:
+        raise Exception ("No heading")
+
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path, 'r') as f:
+        md = f.read()
+
+    with open(template_path, 'r') as f:
+        template = f.read()
+
+    content = markdown_to_html_node(md)
+    title = extract_heading(md)
+
+    template = template.replace("{{ Title }}", title)
+    template = template.replace("{{ Content }}", content)
+
+    if not(os.path.exists(os.path.dirname(dest_path))):
+        os.mkdir(os.path.dirname(dest_path))
+
+    with open(dest_path, 'w') as f:
+        f.write(template)
+        
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    if os.path.exists(dir_path_content):
+        files = os.listdir(dir_path_content)
+        for file in files:
+            
+            path =os.path.join(dir_path_content, file)
+
+            if os.path.isfile(path):
+                generate_page(
+                    f"{dir_path_content}/{file}", 
+                    template_path, 
+                    f"{dest_dir_path}/{file.replace(".md", ".html")}"
+                )         
+            else:
+                print(path)
+                generate_pages_recursive( 
+                    os.path.join(dir_path_content, file), 
+                    template_path, 
+                    os.path.join(dest_dir_path, file)
+                )
+
+            
+
+    
